@@ -1,4 +1,4 @@
-using Azdo.Core.Polling;
+using Azdo.Tui.Polling;
 using Azdo.Tui.Rendering;
 
 namespace Azdo.Tui.Components;
