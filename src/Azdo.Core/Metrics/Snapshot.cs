@@ -191,7 +191,7 @@ public static class Snapshots
         return false;
     }
 
-    internal static bool TryParseDate(string ts, out DateTime d) =>
+    public static bool TryParseDate(string ts, out DateTime d) =>
         DateTime.TryParseExact(ts, DateLayout, CultureInfo.InvariantCulture,
             DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out d);
 

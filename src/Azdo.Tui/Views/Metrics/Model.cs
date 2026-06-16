@@ -153,6 +153,66 @@ public sealed partial class Model : ITabView
         return d <= 0 ? Config.DefaultMetricsIntervalDays : d;
     }
 
+    // --- Test seeding (public so cross-assembly tests can construct fixtures
+    // without exercising the network/file I/O paths). ---
+
+    public MetricKind ChartMetric => _chartMetric;
+    public int SprintCursor => _sprintCursor;
+    public int FocusedUser => _focusedUser;
+
+    /// <summary>Seeds Trends-view state directly for tests, bypassing fetch/snapshot I/O.</summary>
+    public void SeedTrendsForTest(
+        IEnumerable<Snapshot> snapshots,
+        IEnumerable<SprintWindow> windows,
+        IEnumerable<TrendRow> rows,
+        ViewMode mode = ViewMode.TrendsChart)
+    {
+        _snapshots = snapshots.ToList();
+        _sprintWindows = windows.ToList();
+        _trendRows = rows.ToList();
+        _mode = mode;
+        if (_ready) UpdateViewportContent();
+    }
+
+    /// <summary>Sets the selected sprints directly (test fixture helper).</summary>
+    public void SetSelectedSprintsForTest(IEnumerable<string> sprints)
+    {
+        _selectedSprints = sprints.ToList();
+    }
+
+    /// <summary>Sets the chart sprint cursor directly (test fixture helper).</summary>
+    public void SetSprintCursorForTest(int cursor) => _sprintCursor = cursor;
+
+    /// <summary>Sets view mode directly (test fixture helper).</summary>
+    public void SetModeForTest(ViewMode mode)
+    {
+        _mode = mode;
+        if (_ready) UpdateViewportContent();
+    }
+
+    /// <summary>Renders the Trends chart sub-view directly (test helper).</summary>
+    public string RenderTrendsChartForTest() => RenderTrendsChart();
+
+    /// <summary>Renders the Trends table sub-view directly (test helper).</summary>
+    public string RenderTrendsForTest() => RenderTrends();
+
+    /// <summary>Renders the chart user legend directly (test helper).</summary>
+    public string UserLegendForTest() => UserLegend(ChartData.BuildSeries(_trendRows, _chartMetric));
+
+    /// <summary>Returns the chart hints line (test helper).</summary>
+    public string ChartHintsForTest() => ChartHints();
+
+    /// <summary>Renders the flags pane directly (test helper).</summary>
+    public string RenderFlagsPaneForTest() => RenderFlagsPane();
+
+    /// <summary>Renders the users pane directly (test helper).</summary>
+    public string RenderUsersPaneForTest() => RenderUsersPane();
+
+    /// <summary>Whether the active styles pointer matches (test helper).</summary>
+    public bool HasStyles => _styles is not null;
+
+    public int SnapshotCount => _snapshots.Count;
+
     // --- Lifecycle ---
 
     public Cmd? Init()
@@ -536,7 +596,7 @@ public sealed partial class Model : ITabView
         return 0;
     }
 
-    internal List<ItemFlag> VisibleFlags() => _flagFilter switch
+    public List<ItemFlag> VisibleFlags() => _flagFilter switch
     {
         FlagFilter.ActiveStale => _flags.Where(f => f.Reason == "active-stale").ToList(),
         FlagFilter.RFTStale => _flags.Where(f => f.Reason == "rft-stale").ToList(),
