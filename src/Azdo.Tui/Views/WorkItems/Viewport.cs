@@ -50,12 +50,17 @@ internal sealed class Viewport
         return Math.Clamp(p, 0.0, 1.0);
     }
 
+    /// <summary>
+    /// Renders exactly <see cref="Height"/> lines (padding with blanks when the
+    /// content is shorter), matching the bubbles <c>viewport.View</c> behaviour the
+    /// detail view relies on to fill its available height.
+    /// </summary>
     public string View()
     {
-        if (_lines.Length == 0) return string.Empty;
         int end = Math.Min(_lines.Length, YOffset + Height);
         var slice = new List<string>(Height);
         for (int i = YOffset; i < end; i++) slice.Add(_lines[i]);
+        while (slice.Count < Height) slice.Add(string.Empty);
         return string.Join("\n", slice);
     }
 }
