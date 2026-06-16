@@ -59,10 +59,10 @@ public sealed class Model : ITabView, IRestorableTab
         columns = ListView<WorkItem>.NormalizeWidths(columns);
 
         Func<IReadOnlyList<WorkItem>, StyleSet, List<string[]>> toRows =
-            isMulti ? Format.WorkItemsToRowsMulti : Format.WorkItemsToRows;
+            isMulti ? WorkItemFormat.WorkItemsToRowsMulti : WorkItemFormat.WorkItemsToRows;
 
         Func<WorkItem, string, bool> filterFunc =
-            isMulti ? Format.FilterWorkItemMulti : Format.FilterWorkItem;
+            isMulti ? WorkItemFormat.FilterWorkItemMulti : WorkItemFormat.FilterWorkItem;
 
         var cfg = new ListConfig<WorkItem>
         {
@@ -173,7 +173,7 @@ public sealed class Model : ITabView, IRestorableTab
                     bool onList = GetViewMode() == ViewMode.List && !_list.IsSearching;
                     if (key.Key == "T" && onList)
                     {
-                        var tags = Format.CollectUniqueTags(_allItems);
+                        var tags = WorkItemFormat.CollectUniqueTags(_allItems);
                         _tagPicker.SetTags(tags, _activeTag);
                         _tagPicker.SetSize(_width, _height);
                         _tagPicker.Show();
@@ -190,7 +190,7 @@ public sealed class Model : ITabView, IRestorableTab
                     }
                     if (key.Key == "s" && onList)
                     {
-                        var states = Format.CollectUniqueStates(_allItems);
+                        var states = WorkItemFormat.CollectUniqueStates(_allItems);
                         var options = states
                             .Select(state => new ListPickerOption { Name = state, Icon = "●" })
                             .ToList();
@@ -338,8 +338,8 @@ public sealed class Model : ITabView, IRestorableTab
 
     private List<WorkItem> ApplyAllFilters(IReadOnlyList<WorkItem> items)
     {
-        var result = Format.ApplyTagFilter(items, _activeTag);
-        result = Format.ApplyStateFilter(result, _activeState);
+        var result = WorkItemFormat.ApplyTagFilter(items, _activeTag);
+        result = WorkItemFormat.ApplyStateFilter(result, _activeState);
         return result;
     }
 
@@ -389,11 +389,17 @@ public sealed class Model : ITabView, IRestorableTab
         });
     }
 
-    // --- Test seams: expose the inner list for parity with the Go tests ---
+    // --- Inspection seams: expose the inner list for parity with the Go tests ---
 
-    internal IReadOnlyList<WorkItem> ListItems => _list.Items;
-    internal IReadOnlyList<WorkItem> AllItems => _allItems;
-    internal void SetListItemsForTest(IEnumerable<WorkItem> items) => _list.SetItems(items);
-    internal Cmd? UpdateListForTest(IMsg msg) => _list.Update(msg);
-    internal IDetailView? Detail => _list.Detail;
+    /// <summary>The work items currently visible in the list (≈ <c>m.list.Items()</c>).</summary>
+    public IReadOnlyList<WorkItem> ListItems => _list.Items;
+
+    /// <summary>The unfiltered all-items base set (≈ <c>m.allItems</c>).</summary>
+    public IReadOnlyList<WorkItem> AllItems => _allItems;
+
+    /// <summary>Sets the list items directly, bypassing the filter pipeline (≈ <c>m.list.SetItems</c>).</summary>
+    public void SetListItemsForTest(IEnumerable<WorkItem> items) => _list.SetItems(items);
+
+    /// <summary>The currently open detail view, or null on the list (≈ <c>m.list.Detail()</c>).</summary>
+    public IDetailView? Detail => _list.Detail;
 }

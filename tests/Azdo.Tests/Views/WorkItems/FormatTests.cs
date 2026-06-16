@@ -15,14 +15,14 @@ public class FormatTests
     [InlineData("User Story", "Story")]
     [InlineData("Feature", "Feature")]
     public void TypeIcon_ContainsExpectedLabel(string type, string want)
-        => Assert.Contains(want, Format.TypeIcon(type, S));
+        => Assert.Contains(want, WorkItemFormat.TypeIcon(type, S));
 
     [Theory]
     [InlineData("New", "New")]
     [InlineData("Active", "Active")]
     [InlineData("Closed", "Closed")]
     public void StateText_ContainsExpectedLabel(string state, string want)
-        => Assert.Contains(want, Format.StateText(state, S));
+        => Assert.Contains(want, WorkItemFormat.StateText(state, S));
 
     [Theory]
     [InlineData(1, "P1")]
@@ -30,7 +30,7 @@ public class FormatTests
     [InlineData(3, "P3")]
     [InlineData(4, "P4")]
     public void PriorityText_ContainsExpectedLabel(int prio, string want)
-        => Assert.Contains(want, Format.PriorityText(prio, S));
+        => Assert.Contains(want, WorkItemFormat.PriorityText(prio, S));
 
     [Fact]
     public void WorkItemsToRows_BuildsExpectedCells()
@@ -41,7 +41,7 @@ public class FormatTests
             new() { Id = 456, Fields = new() { Title = "Add new feature", State = "New", WorkItemType = "Task", Priority = 2, AssignedTo = null } },
         };
 
-        var rows = Format.WorkItemsToRows(items, S);
+        var rows = WorkItemFormat.WorkItemsToRows(items, S);
 
         Assert.Equal(2, rows.Count);
         Assert.Equal("123", rows[0][1]);
@@ -58,7 +58,7 @@ public class FormatTests
             new() { Id = 100, Fields = new() { Title = "Test Item", WorkItemType = "Task", State = "Active", Priority = 2 }, ProjectName = "alpha", ProjectDisplayName = "alpha" },
         };
 
-        var rows = Format.WorkItemsToRowsMulti(items, S);
+        var rows = WorkItemFormat.WorkItemsToRowsMulti(items, S);
 
         Assert.Single(rows);
         Assert.Equal(7, rows[0].Length);
@@ -81,7 +81,7 @@ public class FormatTests
             Id = 42,
             Fields = new() { Title = "Fix critical login bug", State = "Active", WorkItemType = "Bug", AssignedTo = new Identity { DisplayName = "Jane Smith" } },
         };
-        Assert.Equal(want, Format.FilterWorkItem(wi, query));
+        Assert.Equal(want, WorkItemFormat.FilterWorkItem(wi, query));
     }
 
     [Theory]
@@ -93,24 +93,24 @@ public class FormatTests
     public void FilterWorkItem_MatchesTags(string query, bool want)
     {
         var wi = new WorkItem { Id = 42, Fields = new() { Title = "Fix login bug", State = "Active", WorkItemType = "Bug", Tags = "Sprint 1; Backend; Urgent" } };
-        Assert.Equal(want, Format.FilterWorkItem(wi, query));
+        Assert.Equal(want, WorkItemFormat.FilterWorkItem(wi, query));
     }
 
     [Fact]
     public void FilterWorkItem_NilAssignedTo_DoesNotCrash()
     {
         var wi = new WorkItem { Id = 10, Fields = new() { Title = "Unassigned task", State = "New", WorkItemType = "Task", AssignedTo = null } };
-        Assert.True(Format.FilterWorkItem(wi, "unassigned"));
-        Assert.False(Format.FilterWorkItem(wi, "jane"));
+        Assert.True(WorkItemFormat.FilterWorkItem(wi, "unassigned"));
+        Assert.False(WorkItemFormat.FilterWorkItem(wi, "jane"));
     }
 
     [Fact]
     public void FilterWorkItemMulti_MatchesTagsAndProject()
     {
         var wi = new WorkItem { Id = 42, Fields = new() { Title = "Test", WorkItemType = "Task", Tags = "Sprint 1; Backend" }, ProjectName = "alpha" };
-        Assert.True(Format.FilterWorkItemMulti(wi, "backend"));
-        Assert.True(Format.FilterWorkItemMulti(wi, "alpha"));
-        Assert.False(Format.FilterWorkItemMulti(wi, "beta"));
+        Assert.True(WorkItemFormat.FilterWorkItemMulti(wi, "backend"));
+        Assert.True(WorkItemFormat.FilterWorkItemMulti(wi, "alpha"));
+        Assert.False(WorkItemFormat.FilterWorkItemMulti(wi, "beta"));
     }
 
     [Fact]
@@ -124,7 +124,7 @@ public class FormatTests
             new() { Id = 4, Fields = new() { Tags = "" } },
         };
 
-        var tags = Format.CollectUniqueTags(items);
+        var tags = WorkItemFormat.CollectUniqueTags(items);
         Assert.Equal(4, tags.Count);
         Assert.Contains("Sprint 1", tags);
         Assert.Contains("Backend", tags);
@@ -136,7 +136,7 @@ public class FormatTests
     public void CollectUniqueTags_Sorted()
     {
         var items = new List<WorkItem> { new() { Id = 1, Fields = new() { Tags = "Zebra; Alpha; Middle" } } };
-        var tags = Format.CollectUniqueTags(items);
+        var tags = WorkItemFormat.CollectUniqueTags(items);
         Assert.Equal(new[] { "Alpha", "Middle", "Zebra" }, tags);
     }
 
@@ -150,10 +150,10 @@ public class FormatTests
             new() { Id = 3, Fields = new() { Tags = "Sprint 2; Backend" } },
         };
 
-        Assert.Equal(2, Format.ApplyTagFilter(items, "Backend").Count);
-        Assert.Equal(2, Format.ApplyTagFilter(items, "Sprint 1").Count);
-        Assert.Empty(Format.ApplyTagFilter(items, "Nonexistent"));
-        Assert.Equal(3, Format.ApplyTagFilter(items, "").Count);
+        Assert.Equal(2, WorkItemFormat.ApplyTagFilter(items, "Backend").Count);
+        Assert.Equal(2, WorkItemFormat.ApplyTagFilter(items, "Sprint 1").Count);
+        Assert.Empty(WorkItemFormat.ApplyTagFilter(items, "Nonexistent"));
+        Assert.Equal(3, WorkItemFormat.ApplyTagFilter(items, "").Count);
     }
 
     [Theory]
@@ -167,7 +167,7 @@ public class FormatTests
     [InlineData("Hello<br>World", "Hello\nWorld")]
     [InlineData("Hello<br/>World", "Hello\nWorld")]
     public void StripHtmlTags_ProducesExpected(string input, string expected)
-        => Assert.Equal(expected, Format.StripHtmlTags(input));
+        => Assert.Equal(expected, WorkItemFormat.StripHtmlTags(input));
 
     [Theory]
     [InlineData("Project\\Sprint 1", "Project\\Sprint 1")]
@@ -176,12 +176,12 @@ public class FormatTests
     [InlineData("Single", "Single")]
     [InlineData("", "")]
     public void ShortenIterationPath_ProducesExpected(string input, string expected)
-        => Assert.Equal(expected, Format.ShortenIterationPath(input));
+        => Assert.Equal(expected, WorkItemFormat.ShortenIterationPath(input));
 
     [Theory]
     [InlineData("myorg", "myproject", 123, "https://dev.azure.com/myorg/myproject/_workitems/edit/123")]
     [InlineData("", "project", 123, "")]
     [InlineData("org", "", 123, "")]
     public void BuildWorkItemUrl_ProducesExpected(string org, string project, int id, string want)
-        => Assert.Equal(want, Format.BuildWorkItemUrl(org, project, id));
+        => Assert.Equal(want, WorkItemFormat.BuildWorkItemUrl(org, project, id));
 }

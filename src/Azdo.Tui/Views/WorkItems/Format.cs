@@ -9,7 +9,7 @@ namespace Azdo.Tui.Views.WorkItems;
 /// Pure formatting / filtering helpers ported from list.go and detail.go.
 /// Kept internal-to-package but public for unit testing.
 /// </summary>
-public static partial class Format
+public static partial class WorkItemFormat
 {
     // ----- icon / text formatting (list.go) -----
 

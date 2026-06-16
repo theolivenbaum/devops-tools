@@ -217,7 +217,7 @@ public sealed class DetailModel : IDetailView
             _statusMessage = "Cannot open: no Azure DevOps client";
             return null;
         }
-        string url = Format.BuildWorkItemUrl(_client.GetOrg(), _client.GetProject(), _workItem.Id);
+        string url = WorkItemFormat.BuildWorkItemUrl(_client.GetOrg(), _client.GetProject(), _workItem.Id);
         if (url == "")
         {
             _statusMessage = "Cannot open: missing organization or project";
@@ -367,7 +367,7 @@ public sealed class DetailModel : IDetailView
         if (wi.Fields.IterationPath != "")
         {
             sb.Append(_styles.Label.Render("Iteration: "));
-            sb.Append(Format.ShortenIterationPath(wi.Fields.IterationPath));
+            sb.Append(WorkItemFormat.ShortenIterationPath(wi.Fields.IterationPath));
             sb.Append("\n\n");
         }
 
@@ -391,10 +391,10 @@ public sealed class DetailModel : IDetailView
         // Link to work item (shown before description for quick access).
         if (_client is not null)
         {
-            string url = Format.BuildWorkItemUrl(_client.GetOrg(), _client.GetProject(), wi.Id);
+            string url = WorkItemFormat.BuildWorkItemUrl(_client.GetOrg(), _client.GetProject(), wi.Id);
             if (url != "")
             {
-                sb.Append(Format.Hyperlink(_styles.Link.Render("Open in browser"), url));
+                sb.Append(WorkItemFormat.Hyperlink(_styles.Link.Render("Open in browser"), url));
                 sb.Append("\n\n");
             }
         }
@@ -405,7 +405,7 @@ public sealed class DetailModel : IDetailView
         {
             sb.Append(_styles.Label.Render("Description"));
             sb.Append('\n');
-            string cleanDesc = Format.StripHtmlTags(effectiveDesc);
+            string cleanDesc = WorkItemFormat.StripHtmlTags(effectiveDesc);
             sb.Append(_styles.Value.Width(_width).Render(cleanDesc));
             sb.Append('\n');
         }
@@ -457,7 +457,7 @@ public sealed class DetailModel : IDetailView
                 : author;
             sb.Append(metaStyle.Render(header));
             sb.Append('\n');
-            sb.Append(bodyStyle.Render(Format.StripHtmlTags(c.Text)));
+            sb.Append(bodyStyle.Render(WorkItemFormat.StripHtmlTags(c.Text)));
             sb.Append("\n\n");
         }
     }
