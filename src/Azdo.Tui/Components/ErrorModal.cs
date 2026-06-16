@@ -40,11 +40,11 @@ public static class ErrorClassifier
                 "Your Personal Access Token (PAT) may be expired or invalid.",
                 "Run 'azdo auth' to update your PAT.");
 
-        if (msg.Contains("HTTP 403") || msg.Contains("access denied"))
-            return new ErrorInfo(
-                "Authentication Error",
-                "Your PAT does not have sufficient permissions for this operation.",
-                "Run 'azdo auth' to update your PAT with the required scopes.");
+        // NOTE: a 403 (insufficient permissions) is intentionally NOT classified
+        // as a critical, modal-worthy error. It only means the PAT is missing the
+        // scope for one feature (e.g. Build Read for pipelines); the features whose
+        // scopes ARE present must keep working. Callers surface 403s inline in the
+        // affected tab via the fall-through path. See <see cref="IsPermissionError"/>.
 
         if (msg.Contains("HTTP 400") || msg.Contains("HTTP request failed with status"))
             return new ErrorInfo(
@@ -53,6 +53,19 @@ public static class ErrorClassifier
                 "Check your config file and verify the organization and project names match your Azure DevOps setup.");
 
         return null;
+    }
+
+    /// <summary>
+    /// True when the error is a permission failure (HTTP 403): the PAT is valid
+    /// but lacks the scope required for one specific feature. Such errors are
+    /// surfaced inline in the affected tab and must never block the whole app,
+    /// so the features whose scopes are present keep working.
+    /// </summary>
+    public static bool IsPermissionError(Exception? err)
+    {
+        if (err is null) return false;
+        var msg = err.Message;
+        return msg.Contains("HTTP 403") || msg.Contains("access denied");
     }
 
     /// <summary>

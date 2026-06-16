@@ -337,6 +337,19 @@ public sealed class AppModel : IModel
 
     private (IModel, Cmd?) HandlePipelineUpdate(PipelineRunsUpdated msg)
     {
+        // A 403 means the PAT lacks the Build (Read) scope. This is a per-feature
+        // limitation, not an app-wide failure: surface it inline in the Pipelines
+        // tab and keep the other tabs (PRs / Work Items) fully usable. Bypass the
+        // error handler so a missing scope is not mistaken for a flaky connection
+        // and escalated to a blocking modal / "check your network" retry loop.
+        if (ErrorClassifier.IsPermissionError(msg.Err))
+        {
+            _errorHandler.ClearError();
+            _statusBar.ClearErrorMessage();
+            _statusBar.ClearWarningMessage();
+            return (this, _pipeView.Update(msg));
+        }
+
         var (runs, hasError) = _errorHandler.ProcessUpdate(msg);
         if (hasError)
         {

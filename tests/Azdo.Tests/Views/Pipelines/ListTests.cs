@@ -244,6 +244,20 @@ public class ListTests
     }
 
     [Fact]
+    public void PipelineRunsUpdated_PermissionError_ShowsInline_NoCommand()
+    {
+        // Missing "Build (Read)" scope → 403. The Pipelines tab degrades
+        // gracefully (inline error), it must not bubble a critical-modal command.
+        var model = new Model(null);
+        model.Update(new WindowSizeMsg(120, 30));
+
+        var cmd = model.Update(new PipelineRunsUpdated(new List<PipelineRun>(), Client.FormatHttpError(403)));
+
+        Assert.Null(cmd);
+        Assert.Contains("Error loading", model.View());
+    }
+
+    [Fact]
     public void PipelineRunsUpdated_TransientError_ShowsInline()
     {
         var model = new Model(null);
