@@ -465,6 +465,11 @@ public sealed class AppModel : IModel
 
     public string View()
     {
+        // Full-screen modal overlays take precedence over the tab content.
+        if (_errorModal.IsVisible) return _errorModal.View();
+        if (_helpModal.IsVisible) return _helpModal.View();
+        if (_themePicker.IsVisible) return _themePicker.View();
+
         var size = ContentViewSize();
         var tabBar = RenderTabBar(size.Width);
 

@@ -26,25 +26,29 @@ public class AppSmokeTests
         return new AppModel(client, cfg, "test", "none");
     }
 
-    /// <summary>Runs commands and feeds their resulting messages back, simulating the runtime loop.</summary>
-    private static async Task Drive(AppModel model, Cmd? cmd, int maxRounds = 30)
+    /// <summary>
+    /// Runs commands and feeds their resulting messages back, simulating the
+    /// runtime loop. Commands that don't resolve quickly (the 3600s demo poll
+    /// tick, the GitHub version check) are dropped so the loop stays bounded.
+    /// </summary>
+    private static async Task Drive(AppModel model, Cmd? cmd, int maxRounds = 40)
     {
         var queue = new Queue<Cmd>();
         if (cmd is not null) queue.Enqueue(cmd);
         while (maxRounds-- > 0 && queue.Count > 0)
         {
             var c = queue.Dequeue();
-            var msg = await c();
+            var task = c();
+            var done = await Task.WhenAny(task, Task.Delay(1500));
+            if (done != task) continue; // slow tick / network — skip
+            var msg = task.Result;
             if (msg is null) continue;
             if (msg is BatchMsg batch) { foreach (var bc in batch.Commands) queue.Enqueue(bc); continue; }
-            if (msg is QuitMsg or TickMsg or PollTickAlias) continue;
+            if (msg is QuitMsg or TickMsg) continue;
             var (_, next) = model.Update(msg);
             if (next is not null) queue.Enqueue(next);
         }
     }
-
-    // Polling re-arms a timer forever; alias just to drop it in the smoke loop.
-    private sealed record PollTickAlias : IMsg;
 
     [Fact]
     public void Renders_TabBar_AfterResize()

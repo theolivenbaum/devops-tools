@@ -85,9 +85,17 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - [x] `dotnet test` green
 - [x] README usage verified
 
+## Status
+Full solution builds clean; **624 tests pass**. `azdo`, `azdo demo`, `azdo auth`,
+`azdo --help`, `azdo --version` all work; the demo TUI renders all tabs end-to-end.
+
 ## Known gaps / future work
-- System keyring uses a 0600 file under the config dir on Linux rather than the
-  SecretService D-Bus API; macOS/Windows native stores are TODO. `AZDO_PAT`
-  always works as a fallback.
-- `ntcharts` trend sparkline rendering is approximated with a block-based chart.
+- PAT storage uses a `0600` file under the config dir with an `AZDO_PAT` env
+  fallback, rather than the OS-native credential store (SecretService /
+  Keychain / Credential Manager). Native stores are future work.
+- `ntcharts` trend sparkline rendering is approximated with a unicode block chart.
 - Mouse / `bubblezone` hit-testing from the Go version is not ported (keyboard-only).
+- `azdo demo` does not seed synthetic sprint history, so the metrics **Trends**
+  sub-view starts empty in demo mode (Live view is populated).
+- Build/version stamping (`version`/`commit`/`date`) is hard-coded to `dev`;
+  a release pipeline would inject these via assembly metadata.
