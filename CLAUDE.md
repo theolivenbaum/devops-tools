@@ -1,77 +1,81 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code (claude.ai/code) when working in this repository.
 
 ## Project Overview
 
-**azdo** is a TUI (Terminal User Interface) for working with Azure DevOps in the terminal.
+**azdo** is a TUI (Terminal User Interface) for working with Azure DevOps in the
+terminal. This repository is a **C# / .NET 10 port** of the original Go
+implementation (which used Bubble Tea + Lip Gloss). The port is built on
+[Spectre.Console](https://github.com/spectreconsole/spectre.console).
 
-- **Language**: Go
-- **Project Type**: Terminal User Interface application
-- **Purpose**: Interact with Azure DevOps from the command line
+- **Language**: C# (.NET 10)
+- **UI foundation**: Spectre.Console
+- **Purpose**: Interact with Azure DevOps (Pull Requests, Work Items, Pipelines,
+  Metrics) from the command line.
 
-## Development Setup
+The original Go source is preserved verbatim under [`reference/`](reference/) and
+is the source of truth for behaviour. When in doubt about how a feature should
+behave, read the corresponding Go file.
 
-This project uses Go modules for dependency management.
+## The Port
 
-### Initial Setup
-```bash
-# Initialize Go module (if not already done)
-go mod init github.com/Elpulgo/azdo
+The Go app uses the **Elm Architecture** (Bubble Tea): every component is a
+`Model` with `Init() -> Cmd`, `Update(Msg) -> (Model, Cmd)`, and `View() -> string`.
+Lip Gloss provides ANSI styling and box layout.
 
-# Download dependencies
-go mod download
+Spectre.Console is not an Elm-style event-loop framework, so the port provides:
 
-# Tidy dependencies
-go mod tidy
+- **`Azdo.Tui.Runtime`** — a small Elm-style runtime (`IModel`, `Msg`, `Cmd`,
+  `Program`) that owns the render loop, raw key input, window-resize detection,
+  and an async command scheduler. This mirrors Bubble Tea's `tea.Program`.
+- **`Azdo.Tui.Rendering`** — a Lip Gloss-equivalent styling/layout engine
+  (`Style`, borders, alignment, `JoinHorizontal`/`JoinVertical`, ANSI-aware
+  width/truncate/wrap). Colors are resolved through Spectre.Console's `Color`
+  type, and the runtime renders through `IAnsiConsole`.
+- Spectre.Console is used directly for color handling, capability detection, the
+  console abstraction, and rich one-shot prompts (setup wizard, PAT entry).
+
+### Project layout
+
+```
+src/
+  Azdo.Core/   Domain models, Azure DevOps API client, config, state,
+               metrics core, diff, version check, polling — no UI.
+  Azdo.Tui/    Runtime, rendering engine, styles/themes, reusable components,
+               tab views, and the root application model.
+  Azdo.App/    Executable entry point (CLI dispatch: run / auth / demo / help / version).
+tests/
+  Azdo.Tests/  xUnit tests mirroring the Go *_test.go files.
+reference/     The original Go implementation (read-only reference).
 ```
 
-### Common Commands
+Namespaces mirror folders: `Azdo.Core.AzureDevOps`, `Azdo.Core.Configuration`,
+`Azdo.Tui.Components`, `Azdo.Tui.Views.PullRequests`, etc.
+
+## Common Commands
 
 ```bash
-# Build the application
-go build -o azdo
-
-# Run the application
-go run .
-
-# Run tests
-go test ./...
-
-# Run tests with coverage
-go test -cover ./...
-
-# Run tests for a specific package
-go test ./path/to/package
-
-# Format code
-go fmt ./...
-
-# Vet code for issues
-go vet ./...
+dotnet build AzdoTui.slnx            # build everything
+dotnet test  AzdoTui.slnx            # run all tests
+dotnet run --project src/Azdo.App    # run the TUI
+dotnet run --project src/Azdo.App -- demo   # run with mock data
+dotnet format                        # format code
 ```
 
-## Architecture
+## Conventions
 
-Expected structure:
-- TUI application for Azure DevOps interaction
-- Standard Go project layout with `cmd/`, `pkg/`, and/or `internal/` directories
-- Integration with Azure DevOps REST API
-
-See reference for architecture at [ARCHITECTURE.md](ARCHITECTURE.md) for guidelines.
-
-
-## Important
-You should use beads (bd) as tracking system when creating tasks. ALWAYS run bd ready when a new session starts.
-
-
-## Skill/role
-
-When developing this project you are a pro in Golang, read the SKILL.md file and use these approaches when devloping.
+- Idiomatic, modern C#: nullable reference types, records for immutable data,
+  `sealed` classes by default, file-scoped namespaces, expression-bodied members,
+  pattern matching, `System.Text.Json` for (de)serialization.
+- Mirror the Go architecture: nested model hierarchy, generic `ListView<T>`
+  configured by callbacks, `IDetailView` polymorphism, two-tier
+  `Client`/`MultiClient`, graceful degradation via `PartialError`.
+- **Accept interfaces, return concrete types.** Inject clients/styles/config via
+  constructors; no global state.
 
 ## TDD
 
-!!! CRITICIAL !!! You should at all times use a TDD approach when developing the code.
-
-Build tests first, fail, then make them green.
-
+!!! IMPORTANT !!! Use a TDD approach: write the test, watch it fail, make it
+green. Tests are table-driven where the Go originals were, and they mirror the
+`*_test.go` files under `reference/`.

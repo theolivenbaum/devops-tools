@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Azdo.App</RootNamespace>
+    <AssemblyName>azdo</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Azdo.Core\Azdo.Core.csproj" />
+    <ProjectReference Include="..\Azdo.Tui\Azdo.Tui.csproj" />
+  </ItemGroup>
+</Project>

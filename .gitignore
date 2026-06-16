@@ -35,3 +35,10 @@ go.work.sum
 # .idea/
 # .vscode/
 .claude/settings.local.json
+
+# .NET build output
+bin/
+obj/
+[Bb]in/
+[Oo]bj/
+*.user

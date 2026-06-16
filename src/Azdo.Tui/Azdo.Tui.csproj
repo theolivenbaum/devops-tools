@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Azdo.Tui</RootNamespace>
+    <AssemblyName>Azdo.Tui</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console" Version="0.50.0" />
+    <ProjectReference Include="..\Azdo.Core\Azdo.Core.csproj" />
+  </ItemGroup>
+</Project>
