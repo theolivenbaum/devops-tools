@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "EFmw/xdNroo=",
+  "success": true,
+  "projectFilePath": "/home/user/devops-tools/src/Azdo.Tui/Azdo.Tui.csproj",
+  "expectedPackageFiles": [
+    "/root/.nuget/packages/spectre.console/0.50.0/spectre.console.0.50.0.nupkg.sha512",
+    "/root/.nuget/packages/yamldotnet/16.2.1/yamldotnet.16.2.1.nupkg.sha512"
+  ],
+  "logs": []
+}

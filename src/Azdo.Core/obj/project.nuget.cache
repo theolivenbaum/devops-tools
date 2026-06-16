@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "r7YbI1eiOuY=",
+  "success": true,
+  "projectFilePath": "/home/user/devops-tools/src/Azdo.Core/Azdo.Core.csproj",
+  "expectedPackageFiles": [
+    "/root/.nuget/packages/yamldotnet/16.2.1/yamldotnet.16.2.1.nupkg.sha512"
+  ],
+  "logs": []
+}

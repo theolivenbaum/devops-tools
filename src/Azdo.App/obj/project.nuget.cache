@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "CP2ycn1DCkU=",
+  "success": true,
+  "projectFilePath": "/home/user/devops-tools/src/Azdo.App/Azdo.App.csproj",
+  "expectedPackageFiles": [
+    "/root/.nuget/packages/spectre.console/0.50.0/spectre.console.0.50.0.nupkg.sha512",
+    "/root/.nuget/packages/yamldotnet/16.2.1/yamldotnet.16.2.1.nupkg.sha512"
+  ],
+  "logs": []
+}

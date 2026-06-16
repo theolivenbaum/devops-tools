@@ -1,0 +1,12 @@
+/home/user/devops-tools/src/Azdo.Core/bin/Debug/net10.0/Azdo.Core.deps.json
+/home/user/devops-tools/src/Azdo.Core/bin/Debug/net10.0/Azdo.Core.dll
+/home/user/devops-tools/src/Azdo.Core/bin/Debug/net10.0/Azdo.Core.pdb
+/home/user/devops-tools/src/Azdo.Core/obj/Debug/net10.0/Azdo.Core.csproj.AssemblyReference.cache
+/home/user/devops-tools/src/Azdo.Core/obj/Debug/net10.0/Azdo.Core.GeneratedMSBuildEditorConfig.editorconfig
+/home/user/devops-tools/src/Azdo.Core/obj/Debug/net10.0/Azdo.Core.AssemblyInfoInputs.cache
+/home/user/devops-tools/src/Azdo.Core/obj/Debug/net10.0/Azdo.Core.AssemblyInfo.cs
+/home/user/devops-tools/src/Azdo.Core/obj/Debug/net10.0/Azdo.Core.csproj.CoreCompileInputs.cache
+/home/user/devops-tools/src/Azdo.Core/obj/Debug/net10.0/Azdo.Core.dll
+/home/user/devops-tools/src/Azdo.Core/obj/Debug/net10.0/refint/Azdo.Core.dll
+/home/user/devops-tools/src/Azdo.Core/obj/Debug/net10.0/Azdo.Core.pdb
+/home/user/devops-tools/src/Azdo.Core/obj/Debug/net10.0/ref/Azdo.Core.dll

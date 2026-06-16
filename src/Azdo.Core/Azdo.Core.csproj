@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Azdo.Core</RootNamespace>
+    <AssemblyName>Azdo.Core</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="YamlDotNet" Version="16.2.1" />
+  </ItemGroup>
+</Project>

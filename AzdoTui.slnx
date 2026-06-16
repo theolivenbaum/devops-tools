@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Azdo.App/Azdo.App.csproj" />
+    <Project Path="src/Azdo.Core/Azdo.Core.csproj" />
+    <Project Path="src/Azdo.Tui/Azdo.Tui.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Azdo.Tests/Azdo.Tests.csproj" />
+  </Folder>
+</Solution>
