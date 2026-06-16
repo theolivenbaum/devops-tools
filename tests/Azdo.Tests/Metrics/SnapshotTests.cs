@@ -24,7 +24,7 @@ public class SnapshotTests
     public void ReadSnapshots_RoundTrip()
     {
         var path = TempFile("snap.jsonl");
-        Snapshots.EnsureSnapshotDir(path);
+        MetricsPaths.EnsureSnapshotDir(path);
         var input = new[]
         {
             new Snapshot { TS = "2026-05-28", Id = 1, State = "Active", AssignedTo = "Alice", Source = Snapshots.SourceSnapshot },
@@ -45,7 +45,7 @@ public class SnapshotTests
     public void ReadSnapshots_SkipsMalformed()
     {
         var path = TempFile("snap.jsonl");
-        Snapshots.EnsureSnapshotDir(path);
+        MetricsPaths.EnsureSnapshotDir(path);
         var good = JsonSerializer.Serialize(new Snapshot { TS = "2026-05-28", Id = 1, State = "Active" });
         File.WriteAllText(path, good + "\n{this is not json}\n" + good + "\n");
         var rows = Snapshots.ReadSnapshots(path);
@@ -56,7 +56,7 @@ public class SnapshotTests
     public void AppendSnapshots_DedupLatestWins()
     {
         var path = TempFile("snap.jsonl");
-        Snapshots.EnsureSnapshotDir(path);
+        MetricsPaths.EnsureSnapshotDir(path);
         Snapshots.AppendSnapshots(path,
             new[] { new Snapshot { TS = "2026-05-28", Id = 1, State = "Active", AssignedTo = "Alice" } }, Ret, SnapNow);
         Snapshots.AppendSnapshots(path,
@@ -70,7 +70,7 @@ public class SnapshotTests
     public void AppendSnapshots_PrunesOldRows()
     {
         var path = TempFile("snap.jsonl");
-        Snapshots.EnsureSnapshotDir(path);
+        MetricsPaths.EnsureSnapshotDir(path);
         var combined = new[]
         {
             new Snapshot { TS = "2026-02-21", Id = 1, State = "Active" },
@@ -86,7 +86,7 @@ public class SnapshotTests
     public void AppendSnapshots_AtomicLeavesNoTempFile()
     {
         var path = TempFile("snap.jsonl");
-        Snapshots.EnsureSnapshotDir(path);
+        MetricsPaths.EnsureSnapshotDir(path);
         Snapshots.AppendSnapshots(path,
             new[] { new Snapshot { TS = "2026-05-29", Id = 1, State = "Active" } }, Ret, SnapNow);
         var dir = Path.GetDirectoryName(path)!;
@@ -98,7 +98,7 @@ public class SnapshotTests
     public void AppendSnapshots_SortsDeterministically()
     {
         var path = TempFile("snap.jsonl");
-        Snapshots.EnsureSnapshotDir(path);
+        MetricsPaths.EnsureSnapshotDir(path);
         var input = new[]
         {
             new Snapshot { TS = "2026-05-29", Id = 5, State = "Active" },
@@ -154,7 +154,7 @@ public class SnapshotTests
     public async Task AppendSnapshots_ConcurrentCallsPreserveAllRows()
     {
         var path = TempFile("snap.jsonl");
-        Snapshots.EnsureSnapshotDir(path);
+        MetricsPaths.EnsureSnapshotDir(path);
         const int perWriter = 50;
         var a = new List<Snapshot>();
         var b = new List<Snapshot>();

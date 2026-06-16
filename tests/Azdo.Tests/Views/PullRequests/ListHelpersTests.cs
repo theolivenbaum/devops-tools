@@ -1,8 +1,8 @@
 using Azdo.Core.AzureDevOps;
 using Azdo.Tui.Rendering;
-using Azdo.Tui.Views.PullRequests;
 using Xunit;
 using StyleSet = Azdo.Tui.Styles.Styles;
+using Model = Azdo.Tui.Views.PullRequests.Model;
 
 namespace Azdo.Tests.Views.PullRequests;
 

@@ -421,7 +421,7 @@ public sealed class Model : ITabView, IRestorableTab
 
     // --- Rows / filters / icons ---
 
-    internal static List<string[]> PrsToRows(IReadOnlyList<PullRequest> items, StyleSet s)
+    public static List<string[]> PrsToRows(IReadOnlyList<PullRequest> items, StyleSet s)
     {
         var rows = new List<string[]>(items.Count);
         foreach (var pr in items)
@@ -440,7 +440,7 @@ public sealed class Model : ITabView, IRestorableTab
         return rows;
     }
 
-    internal static List<string[]> PrsToRowsMulti(IReadOnlyList<PullRequest> items, StyleSet s)
+    public static List<string[]> PrsToRowsMulti(IReadOnlyList<PullRequest> items, StyleSet s)
     {
         var rows = new List<string[]>(items.Count);
         foreach (var pr in items)
@@ -460,7 +460,7 @@ public sealed class Model : ITabView, IRestorableTab
         return rows;
     }
 
-    internal static string StatusIcon(string status, bool isDraft, StyleSet s)
+    public static string StatusIcon(string status, bool isDraft, StyleSet s)
     {
         if (isDraft) return s.Warning.Render("◐ Draft");
         return status.ToLowerInvariant() switch
@@ -472,7 +472,7 @@ public sealed class Model : ITabView, IRestorableTab
         };
     }
 
-    internal static string VoteIcon(IReadOnlyList<Reviewer> reviewers, StyleSet s)
+    public static string VoteIcon(IReadOnlyList<Reviewer> reviewers, StyleSet s)
     {
         if (reviewers.Count == 0) return s.Muted.Render("-");
 
@@ -498,7 +498,7 @@ public sealed class Model : ITabView, IRestorableTab
         return s.Muted.Render($"- {count}");
     }
 
-    internal static bool FilterPr(PullRequest pr, string query)
+    public static bool FilterPr(PullRequest pr, string query)
     {
         if (query == "") return true;
         string q = query.ToLowerInvariant();
@@ -509,7 +509,7 @@ public sealed class Model : ITabView, IRestorableTab
             || pr.TargetRefName.ToLowerInvariant().Contains(q);
     }
 
-    internal static bool FilterPrMulti(PullRequest pr, string query)
+    public static bool FilterPrMulti(PullRequest pr, string query)
     {
         if (query == "") return true;
         string q = query.ToLowerInvariant();

@@ -36,6 +36,7 @@ public class LogViewerTests
     {
         var model = New("npm install");
         model.SetSize(80, 24);
+        model.Init(); // makes the loading spinner visible
         var view = model.View();
         Assert.Contains("Loading", view);
         Assert.Contains("npm install", view);
