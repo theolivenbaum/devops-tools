@@ -396,6 +396,20 @@ public class ModelTests
         Assert.DoesNotContain("Error loading", m.View());
     }
 
+    [Fact]
+    public void WorkItemsMsg_PermissionError_ShownInline_NotCritical()
+    {
+        // Missing "Work Items (Read & Write)" scope → 403. It must degrade
+        // gracefully (inline in the Work Items tab), not raise the blocking modal,
+        // so the other tabs keep working.
+        var m = WithSize(120, 30);
+        var permissionErr = Client.FormatHttpError(403);
+        var cmd = m.Update(new WorkItemsMsg(Array.Empty<WorkItem>(), permissionErr));
+
+        Assert.Null(cmd);
+        Assert.Contains("Error loading", m.View());
+    }
+
     // --- Comment form visibility / esc routing ---
 
     private static Model OpenDetailWithItem()

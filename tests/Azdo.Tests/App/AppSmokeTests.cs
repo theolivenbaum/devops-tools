@@ -89,6 +89,31 @@ public class AppSmokeTests
     }
 
     [Fact]
+    public async Task PipelinePermissionError_DoesNotBlockOtherFeatures()
+    {
+        var model = NewDemoApp();
+        model.Update(new WindowSizeMsg(140, 40));
+        await Drive(model, model.Init());
+
+        // Simulate the background poller receiving a 403 because the PAT lacks
+        // the Build (Read) scope.
+        var permissionErr = Azdo.Core.AzureDevOps.Client.FormatHttpError(403);
+        var (_, cmd) = model.Update(new Azdo.Tui.Polling.PipelineRunsUpdated(
+            new List<Azdo.Core.AzureDevOps.PipelineRun>(), permissionErr));
+        await Drive(model, cmd);
+
+        var view = model.View();
+        // The blocking error modal must NOT take over the whole screen.
+        Assert.DoesNotContain("Press esc to dismiss", view);
+        // Pull Requests (Code scope present) keep working.
+        Assert.Contains("OAuth", view);
+
+        // The Pipelines tab itself surfaces the missing-scope error inline.
+        model.Update(KeyMsg.Rune_('3'));
+        Assert.Contains("Error loading pipeline runs", model.View());
+    }
+
+    [Fact]
     public void HelpOverlay_Toggles()
     {
         var model = NewDemoApp();
